@@ -24,7 +24,7 @@ If isRequired is set to \code{TRUE} and the content of \code{variableL} is not v
 }
 \examples{
 # the content is logical:
-myLogicalValue <- T
+myLogicalValue <- TRUE
 myCheckedLogicalValue <- checkLogicalValue("myLogicalValue")
 
 myLogicalValue <- NA
@@ -32,14 +32,20 @@ myCheckedLogicalValue <- checkLogicalValue("myLogicalValue")
 
 # my value is not logical:
 myLogicalValue <- "T"
+\dontrun{
 myCheckedLogicalValue <- checkLogicalValue("myLogicalValue")
+}
 
 # A variable which does not exists:
-myCheckedLogicalValue <- checkLogicalValue("myImaginaryVariableWhichShouldNotExists", isRequired = F)
+myCheckedLogicalValue <- checkLogicalValue("myImaginaryVariableWhichShouldNotExists",
+                                           isRequired = FALSE)
 
 # A variable which does not exists but with default:
-myCheckedLogicalValue <- checkLogicalValue("myImaginaryVariableWhichShouldNotExists", default = TRUE, isRequired = F)
+myCheckedLogicalValue <- checkLogicalValue("myImaginaryVariableWhichShouldNotExists",
+                                           default = TRUE, isRequired = FALSE)
 
 # A variable which does not exists but is required:
+\dontrun{
 myCheckedLogicalValue <- checkLogicalValue("myImaginaryVariableWhichShouldNotExists")
+}
 }

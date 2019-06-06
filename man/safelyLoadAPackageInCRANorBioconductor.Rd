@@ -23,7 +23,7 @@ Or use biocLite if the version is bellow.
 }
 \examples{
 # With a bioconductor
-safelyLoadAPackage("GenomicRanges")
+safelyLoadAPackageInCRANorBioconductor("GenomicRanges")
 # With a CRAN
-safelyLoadAPackage("UpSetR")
+safelyLoadAPackageInCRANorBioconductor("UpSetR")
 }

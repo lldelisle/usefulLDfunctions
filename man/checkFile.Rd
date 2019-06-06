@@ -25,15 +25,18 @@ If isRequired is set to \code{TRUE} and the content of \code{variableFile} is no
 \examples{
 # A file which exists:
 myFile <- ".Rhistory"
+myFile <- list.files()[1]
 myCheckedFile <- checkFile("myFile")
 
 # A variable which does not exists:
-myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists",isRequired=F)
+myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists",isRequired=FALSE)
 
 # A variable which does not exists but with default:
-myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists", default=".Rhistory", isRequired=F)
+myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists",
+                           default=".Rhistory", isRequired=FALSE)
 
 # A variable which does not exists but is required:
+\dontrun{
 myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists")
-
+}
 }

@@ -1,16 +1,16 @@
-library(GenomicRanges)
-library(rtracklayer)
-
 #' Get a GRange with TSS in UCSC format from a path to a gtf file in Ensembl format
 #'
 #' @param myGTF a file path to a gtf file with ensembl chromosome annotation (no "chr")
 #' @return a Genomic Range with all TSS (entries might be duplicated) in UCSC format (with "chr")
+#' @importFrom rtracklayer readGFF
+#' @importFrom GenomicRanges makeGRangesFromDataFrame resize
 #' @export
 #' @examples
 #' \dontrun{
 #' tss <- getTSSinUCSCFormatFromEnsemblGTF("Homo_sapiens.GRCh38.95.gtf.gz")
 #' }
-#' tss <- getTSSinUCSCFormatFromEnsemblGTF(paste0(system.file("test", package="usefulLDfunctions"),"/Homo_sapiens.GRCh38.95_491firstLines.gtf.gz"))
+#' tss <- getTSSinUCSCFormatFromEnsemblGTF(paste0(system.file("tests", package="usefulLDfunctions"),
+#'                                                "/Homo_sapiens.GRCh38.95_491firstLines.gtf.gz"))
 getTSSinUCSCFormatFromEnsemblGTF <- function(myGTF){
   # require packages GenomicRanges rtracklayer
   gtf <- readGFF(myGTF, filter = list(type = "exon"))

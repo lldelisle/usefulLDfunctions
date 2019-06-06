@@ -17,7 +17,7 @@ The bedgraph format is 0-based half open and this remains true for the dataframe
 Put the content of a bedGraph (with or without header gzip or not) in a dataframe
 }
 \examples{
-tests_dir <- system.file("tests", package="myPackage")
+tests_dir <- system.file("tests", package="usefulLDfunctions")
 test_bedgraph <- file.path(tests_dir, "testNoHeader.bedgraph")
 
 # Load the bedgraph with no header in a dataframe

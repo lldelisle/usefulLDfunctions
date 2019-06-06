@@ -29,31 +29,33 @@ rversionAbove<-function(majorT,minorT=0){
 #' If the package is not installed, it will check if it is in CRAN.
 #' If it is not it will use BiocManager if the version of R is above 3.5.0
 #' Or use biocLite if the version is bellow.
+#' @import utils
 #' @export
 #' @examples
 #' # With a bioconductor
-#' safelyLoadAPackage("GenomicRanges")
+#' safelyLoadAPackageInCRANorBioconductor("GenomicRanges")
 #' # With a CRAN
-#' safelyLoadAPackage("UpSetR")
+#' safelyLoadAPackageInCRANorBioconductor("UpSetR")
 safelyLoadAPackageInCRANorBioconductor<-function(myPackage,cranRep="https://stat.ethz.ch/CRAN/"){
   # Require packages base, utils
   # Require function rversionAbove
   # First try to load the package
   if(!suppressWarnings(eval(parse(text=paste0("require(",myPackage,",quietly = T)"))))){
     # Download the list of all CRAN packages
-    possiblePackages<-available.packages(repos = cranRep)[,"Package"]
+    possiblePackages<-utils::available.packages(repos = cranRep)[,"Package"]
     # Test if it is in CRAN
     if(myPackage%in%possiblePackages){
       # Install it specigying the repo to avoid a window to open to choose the repo
-      install.packages(myPackage,repos = cranRep)
+      utils::install.packages(myPackage,repos = cranRep)
     } else {
       # If it is not it should be in bioconductor
       if(rversionAbove(3,5)){
         # With new versions, you need to use BiocManager
-        if (!"BiocManager"%in%installed.packages()){
-          install.packages("BiocManager", repos = cranRep)
+        if (!"BiocManager"%in%utils::installed.packages()){
+          utils::install.packages("BiocManager", repos = cranRep)
         }
-        BiocManager::install(myPackage, update = F, ask = F)
+        # BiocManager::install(myPackage, update = F, ask = F)
+        install(myPackage, update = F, ask = F)
       } else {
         # With older versions you need to source biocLite
         # Sometimes you need https and sometimes http
@@ -75,13 +77,14 @@ safelyLoadAPackageInCRANorBioconductor<-function(myPackage,cranRep="https://stat
 #' @param fn the name of the file (tab delimited file with optionnally headers). Each row of the table appears as one line of the file. If it does not contain an absolute path, the file name is relative to the current working directory, getwd().
 #' @param cond the condition that the number of columns should follow (for example "==4" or ">=3")
 #' @return The dataframe containing the values of the file \code{fn} (the header is removed).
+#' @importFrom utils read.delim
 .readFileFromConditionOnNcols <- function(fn,cond){
   # Require packages base, utils
   # i will be the first line (excluding commented lines) with data (no header)
   i <- 1
   while(TRUE){
     # header is a data.frame containing the i-th line (excluding commented lines)
-    header <- tryCatch(read.delim(gzfile(fn), nrows=1, h=F, skip=(i-1), comment.char = "#"),
+    header <- tryCatch(utils::read.delim(gzfile(fn), nrows=1, h=F, skip=(i-1), comment.char = "#"),
                        error = function(e){NULL})
     if(is.null(header)){
       return(NULL)
@@ -97,7 +100,7 @@ safelyLoadAPackageInCRANorBioconductor<-function(myPackage,cranRep="https://stat
     }
   }
   # return the data frame from the i-th line (excluding comments)
-  return(read.delim(gzfile(fn), h=F, skip=(i-1), comment.char = "#"))
+  return(utils::read.delim(gzfile(fn), h=F, skip=(i-1), comment.char = "#"))
 }
 
 #' Put the content of a bedGraph (with or without header gzip or not) in a dataframe
@@ -107,7 +110,7 @@ safelyLoadAPackageInCRANorBioconductor<-function(myPackage,cranRep="https://stat
 #' The bedgraph format is 0-based half open and this remains true for the dataframe.
 #' @export
 #' @examples
-#' tests_dir <- system.file("tests", package="myPackage")
+#' tests_dir <- system.file("tests", package="usefulLDfunctions")
 #' test_bedgraph <- file.path(tests_dir, "testNoHeader.bedgraph")
 #'
 #' # Load the bedgraph with no header in a dataframe
@@ -138,8 +141,8 @@ readBedGraph<-function(fn){
 #' The bed format is 0-based half open and this remains true for the dataframe.
 #' @export
 #' @examples
-#' tests_dir <- system.file("tests", package="myPackage")
-#' test_bed <- file.path(tests_dir, "test3colWithHeader.bed")
+#' tests_dir <- system.file("tests", package="usefulLDfunctions")
+#' test_bed <- file.path(tests_dir, "test3colWithoutHeader.bed")
 #'
 #' # Load the bedgraph with no header in a dataframe
 #' test_bed_as_df <- readBed(test_bed)
@@ -159,7 +162,8 @@ readBed<-function(fn){
   # Require function .readFileFromConditionOnNcols
   temp_df <- .readFileFromConditionOnNcols(fn, ">=3")
   # the name of the columns is adjusted
-  colnames(temp_df) <- c("chr", "start", "end", "name", "score", "strand", "thickStart", "thickEnd", "itemRgb", "blockCount", "blockSizes", "blockStarts")[1:ncol(temp_df)]
+  colnames(temp_df) <- c("chr", "start", "end", "name", "score", "strand", "thickStart", "thickEnd",
+                         "itemRgb", "blockCount", "blockSizes", "blockStarts")[1:ncol(temp_df)]
   return(temp_df)
 }
 
@@ -177,17 +181,20 @@ readBed<-function(fn){
 #' @examples
 #' # A file which exists:
 #' myFile <- ".Rhistory"
+#' myFile <- list.files()[1]
 #' myCheckedFile <- checkFile("myFile")
 #'
 #' # A variable which does not exists:
-#' myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists",isRequired=F)
+#' myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists",isRequired=FALSE)
 #'
 #' # A variable which does not exists but with default:
-#' myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists", default=".Rhistory", isRequired=F)
+#' myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists",
+#'                            default=".Rhistory", isRequired=FALSE)
 #'
 #' # A variable which does not exists but is required:
+#' \dontrun{
 #' myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists")
-#'
+#'}
 checkFile<-function(variableFile, default = NA, isRequired = T){
   # Require base
   if(exists(variableFile)){
@@ -219,14 +226,16 @@ checkFile<-function(variableFile, default = NA, isRequired = T){
 #' myCheckedDirectory <- checkDirectory("myDirectory")
 #'
 #' # A variable which does not exists:
-#' myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists",isRequired=F)
+#' myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists",isRequired=FALSE)
 #'
 #' # A variable which does not exists but with default:
-#' myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists", default="./", isRequired=F)
+#' myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists",
+#'                                      default="./", isRequired=FALSE)
 #'
 #' # A variable which does not exists but is required:
+#' \dontrun{
 #' myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists")
-#'
+#'}
 checkDirectory<-function(variableDirectory, default = NA, isRequired = T){
   # Require base
   if(exists(variableDirectory)){
@@ -258,18 +267,23 @@ checkDirectory<-function(variableDirectory, default = NA, isRequired = T){
 #' myCheckedNumbers <- checkNumericalValues("myNumbers")
 #'
 #' # some values are not numeric:
+#' \dontrun{
 #' myNumbers <- list(1,2,"T")
 #' myCheckedNumbers <- checkNumericalValues("myNumbers")
+#'}
 #'
 #' # A variable which does not exists:
-#' myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists", isRequired = F)
+#' myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists",
+#'                                          isRequired = FALSE)
 #'
 #' # A variable which does not exists but with default:
-#' myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists", default = c(1,2,12), isRequired = F)
+#' myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists",
+#'                                           default = c(1,2,12), isRequired = FALSE)
 #'
 #' # A variable which does not exists but is required:
+#' \dontrun{
 #' myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists")
-#'
+#'}
 checkNumericalValues<-function(variableN, default = NA, isRequired = T){
   # Require base
   if(exists(variableN)){
@@ -311,10 +325,12 @@ checkNumericalValues<-function(variableN, default = NA, isRequired = T){
 #' myCheckedStrings <- checkStrings("myStrings", possible = c("one", "two"))
 #'
 #' # Restriction which does not match
+#' \dontrun{
 #' myCheckedStrings <- checkStrings("myStrings", possible = c("One", "Two"))
+#'}
 #'
 #' # A variable which does not exists:
-#' myCheckedStrings <- checkStrings("myImaginaryVariableWhichShouldNotExists", isRequired = F)
+#' myCheckedStrings <- checkStrings("myImaginaryVariableWhichShouldNotExists", isRequired = FALSE)
 checkStrings<-function(variableS, possible = NA, default = NA, isRequired = T){
   # Require base
   if(exists(variableS)){
@@ -351,7 +367,7 @@ checkStrings<-function(variableS, possible = NA, default = NA, isRequired = T){
 #' @export
 #' @examples
 #' # the content is logical:
-#' myLogicalValue <- T
+#' myLogicalValue <- TRUE
 #' myCheckedLogicalValue <- checkLogicalValue("myLogicalValue")
 #'
 #' myLogicalValue <- NA
@@ -359,16 +375,22 @@ checkStrings<-function(variableS, possible = NA, default = NA, isRequired = T){
 #'
 #' # my value is not logical:
 #' myLogicalValue <- "T"
+#' \dontrun{
 #' myCheckedLogicalValue <- checkLogicalValue("myLogicalValue")
+#'}
 #'
 #' # A variable which does not exists:
-#' myCheckedLogicalValue <- checkLogicalValue("myImaginaryVariableWhichShouldNotExists", isRequired = F)
+#' myCheckedLogicalValue <- checkLogicalValue("myImaginaryVariableWhichShouldNotExists",
+#'                                            isRequired = FALSE)
 #'
 #' # A variable which does not exists but with default:
-#' myCheckedLogicalValue <- checkLogicalValue("myImaginaryVariableWhichShouldNotExists", default = TRUE, isRequired = F)
+#' myCheckedLogicalValue <- checkLogicalValue("myImaginaryVariableWhichShouldNotExists",
+#'                                            default = TRUE, isRequired = FALSE)
 #'
 #' # A variable which does not exists but is required:
+#' \dontrun{
 #' myCheckedLogicalValue <- checkLogicalValue("myImaginaryVariableWhichShouldNotExists")
+#' }
 checkLogicalValue <- function(variableL, default = NA, isRequired = T){
   # Require base
   if(exists(variableL)){
@@ -391,12 +413,13 @@ checkLogicalValue <- function(variableL, default = NA, isRequired = T){
 #' @param colorname a string or a numerical value containing the potential color
 #' @return A boolean which would say if the colorname is a valid color name or not.
 #' @details A valid color name is a numerical value or a string which is in colors() or a character vector with elements of 7 or 9 characters, "#" followed by the red, blue, green and optionally alpha values in hexadecimal (after rescaling to 0 ... 255).
+#' @importFrom grDevices colors
 #' @export
 isValidColor <- function(colorname){
   if(is.numeric(colorname)){
     return(TRUE)
   }
-  if(colorname %in% colors()){
+  if(colorname %in% grDevices::colors()){
     return(TRUE)
   }
   if(is.character(colorname)){

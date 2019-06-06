@@ -28,16 +28,21 @@ myNumbers <- 1:3
 myCheckedNumbers <- checkNumericalValues("myNumbers")
 
 # some values are not numeric:
+\dontrun{
 myNumbers <- list(1,2,"T")
 myCheckedNumbers <- checkNumericalValues("myNumbers")
+}
 
 # A variable which does not exists:
-myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists", isRequired = F)
+myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists",
+                                         isRequired = FALSE)
 
 # A variable which does not exists but with default:
-myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists", default = c(1,2,12), isRequired = F)
+myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists",
+                                          default = c(1,2,12), isRequired = FALSE)
 
 # A variable which does not exists but is required:
+\dontrun{
 myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists")
-
+}
 }

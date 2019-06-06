@@ -1,12 +1,13 @@
-library(GenomicRanges)
-
 #' Convert a GemomicRanges object (1-based close) in a dataframe like bedgraphs (0-based half open)
 #'
 #' @param gr a GenomicRanges object
 #' @return a data frame with 4 columns (seqnames, start, end, score)
 #' @export
 #' @examples
-#' gr <- GRanges(seqnames = "chr1", ranges = IRanges(start = c(1, 11), end = c(10, 12)), score = c(20, 30))
+#' gr <- GenomicRanges::GRanges(seqnames = "chr1",
+#'                              ranges = IRanges::IRanges(start = c(1, 11),
+#'                                                        end = c(10, 12)),
+#'                              score = c(20, 30))
 #' bedGraphFromGR(gr)
 #' #   seqnames start end score
 #' # 1     chr1     0  10    20
@@ -22,6 +23,7 @@ bedGraphFromGR<-function(gr){
 #'
 #' @param fn a path to the narrowPeak file (it can be gzipped)
 #' @return a Genomic ranges sorted by score decreasing with one line per peak, the summit kept is the one with the higher score
+#' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @export
 grSortedSimplifiedFromNarrowPeak<-function(fn){
   # require package GenomicRanges
@@ -30,7 +32,7 @@ grSortedSimplifiedFromNarrowPeak<-function(fn){
   df <- .readFileFromConditionOnNcols(fn, "== 10")
   colnames(df)<-c("chr","start","end","name","score","strand","signalValue","pValue","qValue","relativeSummit")
   # I want to have only one entry per peak by default you may have multiple summits for one peak
-  dfA<-aggregate(x=list(score=df$score),by=list(chr=df$chr,start=df$start,end=df$end),FUN=max)
+  dfA<-stats::aggregate(x=list(score=df$score),by=list(chr=df$chr,start=df$start,end=df$end),FUN=max)
   dfA<-dfA[order(dfA$score,decreasing = T),]
   myWishedRowNames<-paste0(df$chr,":",df$start,"-",df$end,"_",df$score)
   # You may have multiple summits in the same peak which have the same score
@@ -46,6 +48,7 @@ grSortedSimplifiedFromNarrowPeak<-function(fn){
 #'
 #' @param fn a path to the BED file (it can be gzipped) (0-based half open)
 #' @return a Genomic ranges with intervals (1-based closed)
+#' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @export
 grFromBedFileWithName<-function(fn){
   # require package GenomicRanges

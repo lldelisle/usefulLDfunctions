@@ -39,8 +39,10 @@ myCheckedStrings <- checkStrings("myStrings", possible = c("one", "two", "three"
 myCheckedStrings <- checkStrings("myStrings", possible = c("one", "two"))
 
 # Restriction which does not match
+\dontrun{
 myCheckedStrings <- checkStrings("myStrings", possible = c("One", "Two"))
+}
 
 # A variable which does not exists:
-myCheckedStrings <- checkStrings("myImaginaryVariableWhichShouldNotExists", isRequired = F)
+myCheckedStrings <- checkStrings("myImaginaryVariableWhichShouldNotExists", isRequired = FALSE)
 }

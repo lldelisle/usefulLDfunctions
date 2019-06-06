@@ -17,8 +17,8 @@ The bed format is 0-based half open and this remains true for the dataframe.
 Put the content of a bed file (with or without header gzip or not) in a dataframe
 }
 \examples{
-tests_dir <- system.file("tests", package="myPackage")
-test_bed <- file.path(tests_dir, "test3colWithHeader.bed")
+tests_dir <- system.file("tests", package="usefulLDfunctions")
+test_bed <- file.path(tests_dir, "test3colWithoutHeader.bed")
 
 # Load the bedgraph with no header in a dataframe
 test_bed_as_df <- readBed(test_bed)

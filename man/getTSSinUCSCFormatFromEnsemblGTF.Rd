@@ -19,5 +19,6 @@ Get a GRange with TSS in UCSC format from a path to a gtf file in Ensembl format
 \dontrun{
 tss <- getTSSinUCSCFormatFromEnsemblGTF("Homo_sapiens.GRCh38.95.gtf.gz")
 }
-tss <- getTSSinUCSCFormatFromEnsemblGTF(paste0(system.file("test", package="usefulLDfunctions"),"/Homo_sapiens.GRCh38.95_491firstLines.gtf.gz"))
+tss <- getTSSinUCSCFormatFromEnsemblGTF(paste0(system.file("tests", package="usefulLDfunctions"),
+                                               "/Homo_sapiens.GRCh38.95_491firstLines.gtf.gz"))
 }

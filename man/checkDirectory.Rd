@@ -28,12 +28,14 @@ myDirectory <- "./"
 myCheckedDirectory <- checkDirectory("myDirectory")
 
 # A variable which does not exists:
-myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists",isRequired=F)
+myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists",isRequired=FALSE)
 
 # A variable which does not exists but with default:
-myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists", default="./", isRequired=F)
+myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists",
+                                     default="./", isRequired=FALSE)
 
 # A variable which does not exists but is required:
+\dontrun{
 myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists")
-
+}
 }

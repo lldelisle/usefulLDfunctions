@@ -16,7 +16,10 @@ a data frame with 4 columns (seqnames, start, end, score)
 Convert a GemomicRanges object (1-based close) in a dataframe like bedgraphs (0-based half open)
 }
 \examples{
-gr <- GRanges(seqnames = "chr1", ranges = IRanges(start = c(1, 11), end = c(10, 12)), score = c(20, 30))
+gr <- GenomicRanges::GRanges(seqnames = "chr1",
+                             ranges = IRanges::IRanges(start = c(1, 11),
+                                                       end = c(10, 12)),
+                             score = c(20, 30))
 bedGraphFromGR(gr)
 #   seqnames start end score
 # 1     chr1     0  10    20
