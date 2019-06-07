@@ -19,4 +19,6 @@ Imports:
   grDevices,
   utils
 Suggests:
-  IRanges
+    IRanges,
+    S4Vectors,
+    testthat

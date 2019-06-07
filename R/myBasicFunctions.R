@@ -6,18 +6,18 @@
 #' @param minorT a string or numerical value of the minor version to use as comparison (for example 5 or "5.0"). By default it is 0.
 #' @return \code{TRUE} if you are using a R version which is at least the one privided and \code{FALSE} if your version is below.
 #' @export
-rversionAbove<-function(majorT,minorT=0){
+rversionAbove <- function(majorT, minorT = 0){
   # Require base
-  myMajorn<-as.numeric(R.version$major)
-  majorTn<-as.numeric(majorT)
-  if(myMajorn>majorTn){
+  myMajorn <- as.numeric(R.version$major)
+  majorTn <- as.numeric(majorT)
+  if (myMajorn > majorTn){
     return(TRUE)
-  } else if(myMajorn<majorTn){
+  } else if (myMajorn < majorTn){
     return(TRUE)
   } else {
-    minorTn<-as.numeric(minorT)
-    myMinorn<-as.numeric(R.version$minor)
-    return(myMinorn>=minorTn)
+    minorTn <- as.numeric(minorT)
+    myMinorn <- as.numeric(R.version$minor)
+    return(myMinorn >= minorTn)
   }
 }
 
@@ -36,36 +36,43 @@ rversionAbove<-function(majorT,minorT=0){
 #' safelyLoadAPackageInCRANorBioconductor("GenomicRanges")
 #' # With a CRAN
 #' safelyLoadAPackageInCRANorBioconductor("UpSetR")
-safelyLoadAPackageInCRANorBioconductor<-function(myPackage,cranRep="https://stat.ethz.ch/CRAN/"){
+safelyLoadAPackageInCRANorBioconductor <-
+  function(myPackage, cranRep = "https://stat.ethz.ch/CRAN/"){
   # Require packages base, utils
   # Require function rversionAbove
   # First try to load the package
-  if(!suppressWarnings(eval(parse(text=paste0("require(",myPackage,",quietly = T)"))))){
+  if (!suppressWarnings(eval(parse(text = paste0("require(",
+                                                 myPackage,
+                                                 ", quietly = T)"))))){
     # Download the list of all CRAN packages
-    possiblePackages<-utils::available.packages(repos = cranRep)[,"Package"]
+    possiblePackages <- utils::available.packages(repos = cranRep)[, "Package"]
     # Test if it is in CRAN
-    if(myPackage%in%possiblePackages){
-      # Install it specigying the repo to avoid a window to open to choose the repo
-      utils::install.packages(myPackage,repos = cranRep)
+    if (myPackage %in% possiblePackages){
+      # Install it specigying the repo
+      # to avoid a window to open to choose the repo
+      utils::install.packages(myPackage, repos = cranRep)
     } else {
       # If it is not it should be in bioconductor
-      if(rversionAbove(3,5)){
+      if (rversionAbove(3, 5)){
         # With new versions, you need to use BiocManager
-        if (!"BiocManager"%in%utils::installed.packages()){
+        if (!"BiocManager" %in% utils::installed.packages()){
           utils::install.packages("BiocManager", repos = cranRep)
         }
-        # BiocManager::install(myPackage, update = F, ask = F)
+        # This function is from BiocManager package
         install(myPackage, update = F, ask = F)
       } else {
         # With older versions you need to source biocLite
         # Sometimes you need https and sometimes http
         tryCatch(source("https://bioconductor.org/biocLite.R"),
-                 error=function(e){source("http://bioconductor.org/biocLite.R")})
-        biocLite(myPackage, suppressUpdates = T, suppressAutoUpdate = T, ask = F)
+                 error = function(e){
+                     source("http://bioconductor.org/biocLite.R")
+                   })
+        biocLite(myPackage, suppressUpdates = T,
+                 suppressAutoUpdate = T, ask = F)
       }
     }
     # Now that the package is installed you can load it
-    eval(parse(text=paste0("require(", myPackage, ", quietly = T)")))
+    eval(parse(text = paste0("require(", myPackage, ", quietly = T)")))
   }
 }
 
@@ -78,18 +85,23 @@ safelyLoadAPackageInCRANorBioconductor<-function(myPackage,cranRep="https://stat
 #' @param cond the condition that the number of columns should follow (for example "==4" or ">=3")
 #' @return The dataframe containing the values of the file \code{fn} (the header is removed).
 #' @importFrom utils read.delim
-.readFileFromConditionOnNcols <- function(fn,cond){
+.readFileFromConditionOnNcols <- function(fn, cond){
   # Require packages base, utils
   # i will be the first line (excluding commented lines) with data (no header)
   i <- 1
-  while(TRUE){
-    # header is a data.frame containing the i-th line (excluding commented lines)
-    header <- tryCatch(utils::read.delim(gzfile(fn), nrows=1, h=F, skip=(i-1), comment.char = "#"),
-                       error = function(e){NULL})
-    if(is.null(header)){
+  while (TRUE){
+    # header is a data.frame containing the i-th line
+    # (excluding commented lines)
+    header <- tryCatch(utils::read.delim(gzfile(fn), nrows = 1,
+                                         h = F, skip = (i - 1),
+                                         comment.char = "#"),
+                       error = function(e){
+                           NULL
+                         })
+    if (is.null(header)){
       return(NULL)
     }
-    if(!eval(parse(text=paste0("ncol(header)",cond)))){
+    if (!eval(parse(text = paste0("ncol(header)", cond)))){
       # if the number of columns does not fill the condition cond
       # the i-th line (excluding comments) is a header
       i <- i + 1
@@ -100,7 +112,9 @@ safelyLoadAPackageInCRANorBioconductor<-function(myPackage,cranRep="https://stat
     }
   }
   # return the data frame from the i-th line (excluding comments)
-  return(utils::read.delim(gzfile(fn), h=F, skip=(i-1), comment.char = "#"))
+  return(utils::read.delim(gzfile(fn), h = F,
+                           skip = (i - 1),
+                           comment.char = "#"))
 }
 
 #' Put the content of a bedGraph (with or without header gzip or not) in a dataframe
@@ -125,7 +139,7 @@ safelyLoadAPackageInCRANorBioconductor<-function(myPackage,cranRep="https://stat
 #'
 #' # Load the bedgraph with multiple lines header in a dataframe
 #' test_bedgraph_as_df <- readBedGraph(test_bedgraph)
-readBedGraph<-function(fn){
+readBedGraph <- function(fn){
   # Require packages base
   # Require function .readFileFromConditionOnNcols
   temp_df <- .readFileFromConditionOnNcols(fn, "==4")
@@ -144,26 +158,28 @@ readBedGraph<-function(fn){
 #' tests_dir <- system.file("tests", package="usefulLDfunctions")
 #' test_bed <- file.path(tests_dir, "test3colWithoutHeader.bed")
 #'
-#' # Load the bedgraph with no header in a dataframe
+#' # Load the bed with no header in a dataframe
 #' test_bed_as_df <- readBed(test_bed)
 #'
 #' test_bed <- file.path(tests_dir, "test6colWithHeader.bed")
 #'
-#' # Load the bedgraph with no header in a dataframe
+#' # Load the bed with 6 columns and a header in a dataframe
 #' test_bed_as_df <- readBed(test_bed)
 #'
 #' test_bed <- file.path(tests_dir, "test12colWithHeader.bed.gz")
 #'
-#' # Load the bedgraph with no header in a dataframe
+#' # Load the bed with header with 12 columns gziped in a dataframe
 #' test_bed_as_df <- readBed(test_bed)
 #'
-readBed<-function(fn){
+readBed <- function(fn){
   # Require packages base
   # Require function .readFileFromConditionOnNcols
   temp_df <- .readFileFromConditionOnNcols(fn, ">=3")
   # the name of the columns is adjusted
-  colnames(temp_df) <- c("chr", "start", "end", "name", "score", "strand", "thickStart", "thickEnd",
-                         "itemRgb", "blockCount", "blockSizes", "blockStarts")[1:ncol(temp_df)]
+  colnames(temp_df) <- c("chr", "start", "end", "name", "score",
+                         "strand", "thickStart", "thickEnd",
+                         "itemRgb", "blockCount", "blockSizes",
+                         "blockStarts")[1:ncol(temp_df)]
   return(temp_df)
 }
 
@@ -195,17 +211,18 @@ readBed<-function(fn){
 #' \dontrun{
 #' myCheckedFile <- checkFile("myImaginaryVariableWhichShouldNotExists")
 #'}
-checkFile<-function(variableFile, default = NA, isRequired = T){
+checkFile <- function(variableFile, default = NA, isRequired = T){
   # Require base
-  if(exists(variableFile)){
+  if (exists(variableFile)){
     fn <- eval(parse(text = variableFile))
-    if(file.exists(fn)){
+    if (file.exists(fn)){
       return(fn)
     } else{
-      warning("the file specified in", variableFile, " is ", fn, " and does not exists.\n")
+      warning("the file specified in", variableFile,
+              " is ", fn, " and does not exists.\n")
     }
   }
-  if(isRequired){
+  if (isRequired){
     stop(paste(variableFile, "is not defined or does not exists but required."))
   } else{
     return(default)
@@ -236,18 +253,20 @@ checkFile<-function(variableFile, default = NA, isRequired = T){
 #' \dontrun{
 #' myCheckedDirectory <- checkDirectory("myImaginaryVariableWhichShouldNotExists")
 #'}
-checkDirectory<-function(variableDirectory, default = NA, isRequired = T){
+checkDirectory <- function(variableDirectory, default = NA, isRequired = T){
   # Require base
-  if(exists(variableDirectory)){
-    fn<-eval(parse(text = variableDirectory))
-    if(dir.exists(fn)){
+  if (exists(variableDirectory)){
+    fn <- eval(parse(text = variableDirectory))
+    if (dir.exists(fn)){
       return(fn)
     } else{
-      warning("the directory specified in", variableDirectory, " is ", fn, " and does not exists.\n")
+      warning("the directory specified in", variableDirectory,
+              " is ", fn, " and does not exists.\n")
     }
   }
-  if(isRequired){
-    stop(paste(variableDirectory, "is not defined or does not exists but required."))
+  if (isRequired){
+    stop(paste(variableDirectory,
+               "is not defined or does not exists but required."))
   } else{
     return(default)
   }
@@ -284,18 +303,20 @@ checkDirectory<-function(variableDirectory, default = NA, isRequired = T){
 #' \dontrun{
 #' myCheckedNumbers <- checkNumericalValues("myImaginaryVariableWhichShouldNotExists")
 #'}
-checkNumericalValues<-function(variableN, default = NA, isRequired = T){
+checkNumericalValues <- function(variableN, default = NA, isRequired = T){
   # Require base
-  if(exists(variableN)){
+  if (exists(variableN)){
     valN <- eval(parse(text = variableN))
-    if(all(is.numeric(valN))){
+    if (all(is.numeric(valN))){
       return(valN)
     } else{
-      warning("the numbers specified in", variableN, " is/are ", paste(valN, collapse = ","), " and does not contains only numeric values.\n")
+      warning("the numbers specified in", variableN,
+              " is/are ", paste(valN, collapse = ","),
+              " and does not contains only numeric values.\n")
     }
   }
-  if(isRequired){
-    stop(paste(variableN,"is not defined or not a number but required."))
+  if (isRequired){
+    stop(paste(variableN, "is not defined or not a number but required."))
   } else{
     return(default)
   }
@@ -331,28 +352,31 @@ checkNumericalValues<-function(variableN, default = NA, isRequired = T){
 #'
 #' # A variable which does not exists:
 #' myCheckedStrings <- checkStrings("myImaginaryVariableWhichShouldNotExists", isRequired = FALSE)
-checkStrings<-function(variableS, possible = NA, default = NA, isRequired = T){
+checkStrings <- function(variableS, possible = NA,
+                         default = NA, isRequired = T){
   # Require base
-  if(exists(variableS)){
+  if (exists(variableS)){
     valS <- eval(parse(text = variableS))
-    if(length(possible) == 1 && is.na(possible)){
+    if (length(possible) == 1 && is.na(possible)){
       return(valS)
     } else {
-      if(all(valS %in% possible)){
+      if (all(valS %in% possible)){
         return(valS)
       } else {
         newValS <- intersect(valS, possible)
         rejValS <- setdiff(valS, newValS)
-        warning(paste(rejValS, collapse = ","), " were proposed as ", variableS, " but are not possible.\n")
-        if(length(newValS) > 0){
+        warning(paste(rejValS, collapse = ","), " were proposed as ",
+                variableS, " but are not possible.\n")
+        if (length(newValS) > 0){
           return(newValS)
         }
       }
     }
   }
-  if(isRequired){
-    stop(paste(variableS, "is not defined or not a part of", paste(possible, collapse = ","), "but required."))
-  } else{
+  if (isRequired){
+    stop(paste(variableS, "is not defined or not a part of",
+               paste(possible, collapse = ","), "but required."))
+  } else {
     return(default)
   }
 }
@@ -393,17 +417,18 @@ checkStrings<-function(variableS, possible = NA, default = NA, isRequired = T){
 #' }
 checkLogicalValue <- function(variableL, default = NA, isRequired = T){
   # Require base
-  if(exists(variableL)){
-    valL <- eval(parse(text=variableL))[1]
-    if(is.logical(valL)){
+  if (exists(variableL)){
+    valL <- eval(parse(text = variableL))[1]
+    if (is.logical(valL)){
       return(valL)
     } else {
-      warning("the first value of ", variableL, " is ", valL, " and is not a logical value.\n")
+      warning("the first value of ", variableL, " is ",
+              valL, " and is not a logical value.\n")
     }
   }
-  if(isRequired){
+  if (isRequired){
     stop(paste(variableL, "is not defined or not logical but required."))
-  } else{
+  } else {
     return(default)
   }
 }
@@ -416,15 +441,15 @@ checkLogicalValue <- function(variableL, default = NA, isRequired = T){
 #' @importFrom grDevices colors
 #' @export
 isValidColor <- function(colorname){
-  if(is.numeric(colorname)){
+  if (is.numeric(colorname)){
     return(TRUE)
   }
-  if(colorname %in% grDevices::colors()){
+  if (colorname %in% grDevices::colors()){
     return(TRUE)
   }
-  if(is.character(colorname)){
-    if(nchar(colorname)==7 || nchar(colorname)==9){
-      if(substr(colorname,1,1)=="#"){
+  if (is.character(colorname)){
+    if (nchar(colorname) == 7 || nchar(colorname) == 9){
+      if (substr(colorname, 1, 1) == "#"){
         #I should do other checks
         return(TRUE)
       }
@@ -449,10 +474,10 @@ isValidColor <- function(colorname){
 #' subsetByNamesOrIndices(l,c("a", "c"))
 subsetByNamesOrIndices <- function(bigList, templNames){
   templ <- list()
-  for(n in templNames){
+  for (n in templNames){
     templ <- c(templ, list(bigList[[n]]))
   }
-  if(is.integer(templNames)){
+  if (is.integer(templNames)){
     names(templ) <- names(bigList)[templNames]
   } else {
     names(templ) <- templNames

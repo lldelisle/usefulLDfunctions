@@ -59,10 +59,10 @@ grSortedSimplifiedFromNarrowPeak <- function(fn){
 #' @export
 #' @examples
 #' tests_dir <- system.file("tests", package="usefulLDfunctions")
-#' test_bed <- file.path(tests_dir, "test3colWithoutHeader.bed")
+#' test_bed <- file.path(tests_dir, "test6colWithHeader.bed")
 #'
 #' # Load the bed with no header in a dataframe
-#' grBED <- grFromBedFileWithName(test_bed)
+#' grBED <- grFromBedFile(test_bed)
 grFromBedFile <- function(fn){
   # require package GenomicRanges
   # require function readBed

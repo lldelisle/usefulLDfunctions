@@ -20,17 +20,17 @@ Put the content of a bed file (with or without header gzip or not) in a datafram
 tests_dir <- system.file("tests", package="usefulLDfunctions")
 test_bed <- file.path(tests_dir, "test3colWithoutHeader.bed")
 
-# Load the bedgraph with no header in a dataframe
+# Load the bed with no header in a dataframe
 test_bed_as_df <- readBed(test_bed)
 
 test_bed <- file.path(tests_dir, "test6colWithHeader.bed")
 
-# Load the bedgraph with no header in a dataframe
+# Load the bed with 6 columns and a header in a dataframe
 test_bed_as_df <- readBed(test_bed)
 
 test_bed <- file.path(tests_dir, "test12colWithHeader.bed.gz")
 
-# Load the bedgraph with no header in a dataframe
+# Load the bed with header with 12 columns gziped in a dataframe
 test_bed_as_df <- readBed(test_bed)
 
 }
