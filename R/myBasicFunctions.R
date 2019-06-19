@@ -484,3 +484,45 @@ subsetByNamesOrIndices <- function(bigList, templNames){
   }
   return(templ)
 }
+
+#' Find the longest common substring from the end between 2 words
+#'
+#' @param word1 first string
+#' @param word2 second string
+#' @return The longest common substring from the end to \code{word1} and \code{word2} or \code{""} if there is no.
+#' @export
+#' @examples
+#' word1 <- "beautiful"
+#' word2 <- "useful"
+#' commonEnd(word1, word2)
+commonEnd <- function (word1, word2) {
+  # s1 are all substrings from the end from length of 1 to whole word1
+  s1 <- substring(word1, nchar(word1):1, nchar(word1))
+  s2 <- substring(word2, nchar(word2):1, nchar(word2))
+  w <- which(s1 %in% s2)
+  if(length(w)>0){
+    return(s2[max(w)])
+  } else {
+    return(character(1))
+  }
+}
+
+
+#' Simplify a vector of names removing the common end
+#'
+#' @param vecOfNames a vector with different names to simplify
+#' @return a vector with the same length as \code{vecOfNames} where the end of the names were removed if they were identicals.
+#' @export
+#' @examples
+#' vecOfNames <- c("beautiful", "useful", "painful")
+#' simplifiedNamesByEnd(vecOfNames)
+simplifiedNamesByEnd <- function(vecOfNames){
+  if (length(vecOfNames) <= 1){
+    return(vecOfNames)
+  }
+  curCommonEnd <- vecOfNames[1]
+  for (i in 2:length(vecOfNames)){
+    curCommonEnd <- commonEnd(vecOfNames[i], curCommonEnd)
+  }
+  return(gsub(paste0(curCommonEnd,"$"),"",vecOfNames))
+}
