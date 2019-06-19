@@ -148,3 +148,19 @@ test_that("subsetByNamesOrIndices gives expected results", {
   expect_equal(subsetByNamesOrIndices(l, c("a", "c")),
                list("a" = c(1, 3), "c" = "fun"))
 })
+
+test_that("commonEnd gives expected results", {
+  word1 <- "beautiful"
+  word2 <- "useful"
+  expect_equal(commonEnd(word1, word2),"ful")
+  expect_equal(commonEnd(paste0(word1,"t"), word2),"")
+})
+
+
+test_that("simplifiedByEnd gives expected results", {
+  vecOfNames <- c("beautiful", "useful", "painful")
+  expect_equal(simplifiedNamesByEnd(vecOfNames),c("beauti","use","pain"))
+  vecOfNamesDoNotMatch <- c("beautifully", "useful", "painful")
+  expect_equal(simplifiedNamesByEnd(vecOfNamesDoNotMatch),vecOfNamesDoNotMatch)
+  expect_equal(simplifiedNamesByEnd(vecOfNamesDoNotMatch[1]),vecOfNamesDoNotMatch[1])
+})
