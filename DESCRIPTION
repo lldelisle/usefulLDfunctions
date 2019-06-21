@@ -1,6 +1,6 @@
 Package: usefulLDfunctions
 Title: Functions That I Use Regularly
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: 
     person(given = "Lucille",
            family = "Lopez-Delisle",
