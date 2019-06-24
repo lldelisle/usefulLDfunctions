@@ -1,24 +1,20 @@
 Package: usefulLDfunctions
 Title: Functions That I Use Regularly
-Version: 0.0.3
+Version: 0.1.0
 Authors@R: 
     person(given = "Lucille",
            family = "Lopez-Delisle",
            role = c("aut", "cre"),
            email = "lucille.delisle@epfl.ch",
            comment = c(ORCID = "0000-0002-1964-4960"))
-Description: Useful functions to do plots, manipulate GRanges etc...
+Description: Useful functions to do plots, manipulate bed files with headers etc...
 License: CC BY 4.0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 Imports: 
-  GenomicRanges, 
-  rtracklayer,
   stats,
   grDevices,
   utils
 Suggests:
-    IRanges,
-    S4Vectors,
     testthat
