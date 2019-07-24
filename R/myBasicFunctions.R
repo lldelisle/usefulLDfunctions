@@ -38,41 +38,41 @@ rversionAbove <- function(majorT, minorT = 0){
 #' safelyLoadAPackageInCRANorBioconductor("UpSetR")
 safelyLoadAPackageInCRANorBioconductor <-
   function(myPackage, cranRep = "https://stat.ethz.ch/CRAN/"){
-  # Require packages base, utils
-  # Require function rversionAbove
-  # First try to load the package
-  if (!suppressWarnings(eval(parse(text = paste0("require(",
-                                                 myPackage,
-                                                 ", quietly = T)"))))){
-    # Download the list of all CRAN packages
-    possiblePackages <- utils::available.packages(repos = cranRep)[, "Package"]
-    # Test if it is in CRAN
-    if (myPackage %in% possiblePackages){
-      # Install it specigying the repo
-      # to avoid a window to open to choose the repo
-      utils::install.packages(myPackage, repos = cranRep)
-    } else {
-      # If it is not it should be in bioconductor
-      if (rversionAbove(3, 5)){
-        # With new versions, you need to use BiocManager
-        safelyLoadAPackageInCRANorBioconductor("BiocManager")
-        # This function is from BiocManager package
-        install(myPackage, update = F, ask = F)
+    # Require packages base, utils
+    # Require function rversionAbove
+    # First try to load the package
+    if (!suppressWarnings(eval(parse(text = paste0("require(",
+                                                   myPackage,
+                                                   ", quietly = T)"))))){
+      # Download the list of all CRAN packages
+      possiblePackages <- utils::available.packages(repos = cranRep)[, "Package"]
+      # Test if it is in CRAN
+      if (myPackage %in% possiblePackages){
+        # Install it specigying the repo
+        # to avoid a window to open to choose the repo
+        utils::install.packages(myPackage, repos = cranRep)
       } else {
-        # With older versions you need to source biocLite
-        # Sometimes you need https and sometimes http
-        tryCatch(source("https://bioconductor.org/biocLite.R"),
-                 error = function(e){
+        # If it is not it should be in bioconductor
+        if (rversionAbove(3, 5)){
+          # With new versions, you need to use BiocManager
+          safelyLoadAPackageInCRANorBioconductor("BiocManager")
+          # This function is from BiocManager package
+          install(myPackage, update = F, ask = F)
+        } else {
+          # With older versions you need to source biocLite
+          # Sometimes you need https and sometimes http
+          tryCatch(source("https://bioconductor.org/biocLite.R"),
+                   error = function(e){
                      source("http://bioconductor.org/biocLite.R")
                    })
-        biocLite(myPackage, suppressUpdates = T,
-                 suppressAutoUpdate = T, ask = F)
+          biocLite(myPackage, suppressUpdates = T,
+                   suppressAutoUpdate = T, ask = F)
+        }
       }
+      # Now that the package is installed you can load it
+      eval(parse(text = paste0("require(", myPackage, ", quietly = T)")))
     }
-    # Now that the package is installed you can load it
-    eval(parse(text = paste0("require(", myPackage, ", quietly = T)")))
   }
-}
 
 #### READ FUNCTIONS ####
 
@@ -94,8 +94,8 @@ safelyLoadAPackageInCRANorBioconductor <-
                                          h = F, skip = (i - 1),
                                          comment.char = "#"),
                        error = function(e){
-                           NULL
-                         })
+                         NULL
+                       })
     if (is.null(header)){
       return(NULL)
     }
@@ -523,4 +523,26 @@ simplifiedNamesByEnd <- function(vecOfNames){
     curCommonEnd <- commonEnd(vecOfNames[i], curCommonEnd)
   }
   return(gsub(paste0(curCommonEnd,"$"),"",vecOfNames))
+}
+
+#' Show the corner of a matrix
+#'
+#' @param matrix a matrix or a dataframe
+#' @param size the size to display (default is 5)
+#' @param corner the corner to display ("topleft", "topright", "bottomleft", or "bottomright"), default is "topleft"
+#' @return a matrix or a dataframe `size` by `size`.
+#' @export
+#' @examples
+#' myHugeMatrix <- matrix(1:10000, nrow = 100)
+#' cornerMat(myHugeMatrix, 10)
+#' cornerMat(myHugeMatrix, 3, "bottomleft")
+#' mySmallMatrix <- matrix(1:9, nrow = 3)
+#' cornerMat(mySmallMatrix)
+cornerMat <- function(matrix, size = 5, corner = "topleft"){
+  switch(corner,
+         "topleft" = head(matrix, size)[, head(1:ncol(matrix), size)],
+         "bottomleft" = tail(matrix, size)[, head(1:ncol(matrix), size)],
+         "topright" = head(matrix, size)[, tail(1:ncol(matrix), size)],
+         "bottomright" = tail(matrix, size)[, tail(1:ncol(matrix), size)],
+         stop("the corner value is not valid."))
 }

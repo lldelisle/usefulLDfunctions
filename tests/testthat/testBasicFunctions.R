@@ -164,3 +164,15 @@ test_that("simplifiedByEnd gives expected results", {
   expect_equal(simplifiedNamesByEnd(vecOfNamesDoNotMatch),vecOfNamesDoNotMatch)
   expect_equal(simplifiedNamesByEnd(vecOfNamesDoNotMatch[1]),vecOfNamesDoNotMatch[1])
 })
+
+test_that("cornerMat gives expected results", {
+  myHugeMatrix <- matrix(1:10000, nrow = 100)
+  expect_equal(cornerMat(myHugeMatrix, 2), matrix(c(1, 2, 101, 102), ncol = 2))
+  expected <- matrix(rep(c(98, 99, 100), 3) +
+                       rep(c(0, 100, 200), each = 3),
+                     ncol = 3)
+  rownames(expected) <- c(" [98,]", " [99,]", "[100,]")
+  expect_equal(cornerMat(myHugeMatrix, 3, "bottomleft"), expected)
+  mySmallMatrix <- matrix(1:9, nrow = 3)
+  expect_equal(cornerMat(mySmallMatrix), mySmallMatrix)
+})
