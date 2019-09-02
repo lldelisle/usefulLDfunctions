@@ -45,7 +45,10 @@ safelyLoadAPackageInCRANorBioconductor <-
                                                    myPackage,
                                                    ", quietly = T)"))))){
       # Download the list of all CRAN packages
-      possiblePackages <- utils::available.packages(repos = cranRep)[, "Package"]
+      possiblePackages <- tryCatch(utils::available.packages(repos = cranRep),
+                                   error = function(e){
+                                     utils::available.packages()
+                                     })[, "Package"]
       # Test if it is in CRAN
       if (myPackage %in% possiblePackages){
         # Install it specigying the repo
