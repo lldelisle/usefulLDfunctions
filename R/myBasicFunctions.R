@@ -508,6 +508,28 @@ commonEnd <- function (word1, word2) {
   }
 }
 
+#' Find the longest common substring from the start between 2 words
+#'
+#' @param word1 first string
+#' @param word2 second string
+#' @return The longest common substring from the start to \code{word1} and \code{word2} or \code{""} if there is no.
+#' @export
+#' @examples
+#' word1 <- "useless"
+#' word2 <- "useful"
+#' commonStart(word1, word2)
+commonStart <- function (word1, word2) {
+  # s1 are all substrings from the end from length of 1 to whole word1
+  s1 <- substring(word1, 1, 1:nchar(word1))
+  s2 <- substring(word2, 1, 1:nchar(word2))
+  w <- which(s1 %in% s2)
+  if(length(w)>0){
+    return(s2[max(w)])
+  } else {
+    return(character(1))
+  }
+}
+
 
 #' Simplify a vector of names removing the common end
 #'

@@ -156,6 +156,12 @@ test_that("commonEnd gives expected results", {
   expect_equal(commonEnd(paste0(word1,"t"), word2),"")
 })
 
+test_that("commonStart gives expected results", {
+  word1 <- "useless"
+  word2 <- "useful"
+  expect_equal(commonStart(word1, word2),"use")
+  expect_equal(commonStart(paste0("t", word1), word2),"")
+})
 
 test_that("simplifiedByEnd gives expected results", {
   vecOfNames <- c("beautiful", "useful", "painful")
