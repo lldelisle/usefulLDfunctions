@@ -550,6 +550,37 @@ simplifiedNamesByEnd <- function(vecOfNames){
   return(gsub(paste0(curCommonEnd,"$"),"",vecOfNames))
 }
 
+#' Simplify a vector of names removing the common end
+#'
+#' @param vecOfNames a vector with different names to simplify
+#' @return a vector with the same length as \code{vecOfNames} where the end of the names were removed if they were identicals.
+#' @export
+#' @examples
+#' vecOfNames <- c("old", "oldish", "older")
+#' simplifiedNamesByStart(vecOfNames)
+simplifiedNamesByStart <- function(vecOfNames){
+  if (length(vecOfNames) <= 1){
+    return(vecOfNames)
+  }
+  curCommonStart <- vecOfNames[1]
+  for (i in 2:length(vecOfNames)){
+    curCommonStart <- commonStart(vecOfNames[i], curCommonStart)
+  }
+  return(gsub(paste0("^", curCommonStart),"",vecOfNames))
+}
+
+#' Simplify a vector of names removing the common start and the common end
+#'
+#' @param vecOfNames a vector with different names to simplify
+#' @return a vector with the same length as \code{vecOfNames} where the start and the end of the names were removed if they were identicals.
+#' @export
+#' @examples
+#' vecOfNames <- c("sampleOne.bed", "sampleTwo.bed", "sampleThree.bed")
+#' simplifiedNamesByStartEnd(vecOfNames)
+simplifiedNamesByStartEnd <- function(vecOfNames){
+  return(simplifiedNamesByStart(simplifiedNamesByEnd(vecOfNames)))
+}
+
 #' Show the corner of a matrix
 #'
 #' @param matrix a matrix or a dataframe

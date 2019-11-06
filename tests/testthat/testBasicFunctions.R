@@ -171,6 +171,30 @@ test_that("simplifiedByEnd gives expected results", {
   expect_equal(simplifiedNamesByEnd(vecOfNamesDoNotMatch[1]),vecOfNamesDoNotMatch[1])
 })
 
+test_that("simplifiedByStart gives expected results", {
+  vecOfNames <- c("old", "oldish", "older")
+  expect_equal(simplifiedNamesByStart(vecOfNames), c("", "ish", "er"))
+  vecOfNamesDoNotMatch <- c("old", "oldish", "younger")
+  expect_equal(simplifiedNamesByStart(vecOfNamesDoNotMatch),vecOfNamesDoNotMatch)
+  expect_equal(simplifiedNamesByStart(vecOfNamesDoNotMatch[1]),vecOfNamesDoNotMatch[1])
+})
+
+test_that("simplifiedByStartEnd gives expected results", {
+  vecOfNames <- c("sampleOne.bed", "sampleTwo.bed", "sampleThree.bed")
+  expect_equal(simplifiedNamesByStartEnd(vecOfNames), c("One", "Two", "Three"))
+  vecOfNames <- c("old", "oldish", "older")
+  expect_equal(simplifiedNamesByStartEnd(vecOfNames), c("", "ish", "er"))
+  vecOfNamesDoNotMatch <- c("old", "oldish", "younger")
+  expect_equal(simplifiedNamesByStartEnd(vecOfNamesDoNotMatch),vecOfNamesDoNotMatch)
+  expect_equal(simplifiedNamesByStartEnd(vecOfNamesDoNotMatch[1]),vecOfNamesDoNotMatch[1])
+  vecOfNames <- c("beautiful", "useful", "painful")
+  expect_equal(simplifiedNamesByStartEnd(vecOfNames),c("beauti","use","pain"))
+  vecOfNamesDoNotMatch <- c("beautifully", "useful", "painful")
+  expect_equal(simplifiedNamesByStartEnd(vecOfNamesDoNotMatch),vecOfNamesDoNotMatch)
+  expect_equal(simplifiedNamesByStartEnd(vecOfNamesDoNotMatch[1]),vecOfNamesDoNotMatch[1])
+})
+
+
 test_that("cornerMat gives expected results", {
   myHugeMatrix <- matrix(1:10000, nrow = 100)
   expect_equal(cornerMat(myHugeMatrix, 2), matrix(c(1, 2, 101, 102), ncol = 2))
