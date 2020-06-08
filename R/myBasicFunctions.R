@@ -124,7 +124,7 @@ safelyLoadAPackageInCRANorBioconductor <-
   return(utils::read.delim(gzfile(fn), h = F,
                            skip = (i - 1),
                            comment.char = "#",
-                           quote = keepQuote))
+                           quote = quoteChar))
 }
 
 #' Put the content of a bedGraph (with or without header gzip or not) in a dataframe
