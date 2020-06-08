@@ -4,8 +4,10 @@
 \alias{safelyLoadAPackageInCRANorBioconductor}
 \title{Load a package and install it if it is not installed using CRAN or Bioconductor.}
 \usage{
-safelyLoadAPackageInCRANorBioconductor(myPackage,
-  cranRep = "https://stat.ethz.ch/CRAN/")
+safelyLoadAPackageInCRANorBioconductor(
+  myPackage,
+  cranRep = "https://stat.ethz.ch/CRAN/"
+)
 }
 \arguments{
 \item{myPackage}{a string with the name of your package}

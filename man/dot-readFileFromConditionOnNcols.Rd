@@ -5,12 +5,14 @@
 \title{Put the content of a tab separated file (with or without header gzip or not) in a dataframe
 From the first line where the number of fields follow the condition cond}
 \usage{
-.readFileFromConditionOnNcols(fn, cond)
+.readFileFromConditionOnNcols(fn, cond, keepQuote = F)
 }
 \arguments{
 \item{fn}{the name of the file (tab delimited file with optionnally headers). Each row of the table appears as one line of the file. If it does not contain an absolute path, the file name is relative to the current working directory, getwd().}
 
 \item{cond}{the condition that the number of columns should follow (for example "==4" or ">=3")}
+
+\item{keepQuote}{logical whether the quotes should be kept useful for gtf files (default is F)}
 }
 \value{
 The dataframe containing the values of the file \code{fn} (the header is removed).

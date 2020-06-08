@@ -84,9 +84,10 @@ safelyLoadAPackageInCRANorBioconductor <-
 #'
 #' @param fn the name of the file (tab delimited file with optionnally headers). Each row of the table appears as one line of the file. If it does not contain an absolute path, the file name is relative to the current working directory, getwd().
 #' @param cond the condition that the number of columns should follow (for example "==4" or ">=3")
+#' @param keepQuote logical whether the quotes should be kept useful for gtf files (default is F)
 #' @return The dataframe containing the values of the file \code{fn} (the header is removed).
 #' @importFrom utils read.delim
-.readFileFromConditionOnNcols <- function(fn, cond){
+.readFileFromConditionOnNcols <- function(fn, cond, keepQuote=F){
   # Require packages base, utils
   # i will be the first line (excluding commented lines) with data (no header)
   i <- 1
@@ -112,10 +113,18 @@ safelyLoadAPackageInCRANorBioconductor <-
       break
     }
   }
+  # change the quote char if keepQuote
+  if (keepQuote){
+    quoteChar <- ""
+  } else {
+    # I use the default of read.delim
+    quoteChar <- "\""
+  }
   # return the data frame from the i-th line (excluding comments)
   return(utils::read.delim(gzfile(fn), h = F,
                            skip = (i - 1),
-                           comment.char = "#"))
+                           comment.char = "#",
+                           quote = keepQuote))
 }
 
 #' Put the content of a bedGraph (with or without header gzip or not) in a dataframe
