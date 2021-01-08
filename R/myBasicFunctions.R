@@ -13,7 +13,7 @@ rversionAbove <- function(majorT, minorT = 0){
   if (myMajorn > majorTn){
     return(TRUE)
   } else if (myMajorn < majorTn){
-    return(TRUE)
+    return(FALSE)
   } else {
     minorTn <- as.numeric(minorT)
     myMinorn <- as.numeric(R.version$minor)
