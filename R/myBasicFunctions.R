@@ -48,7 +48,7 @@ safelyLoadAPackageInCRANorBioconductor <-
       possiblePackages <- tryCatch(utils::available.packages(repos = cranRep),
                                    error = function(e){
                                      utils::available.packages()
-                                     })[, "Package"]
+                                   })[, "Package"]
       # Test if it is in CRAN
       if (myPackage %in% possiblePackages){
         # Install it specigying the repo
@@ -595,6 +595,7 @@ simplifiedNamesByStartEnd <- function(vecOfNames){
 #' @param matrix a matrix or a dataframe
 #' @param size the size to display (default is 5)
 #' @param corner the corner to display ("topleft", "topright", "bottomleft", or "bottomright"), default is "topleft"
+#' @param method the method to select the top or bottom, default is 'minmax', can also be 'headtail'.
 #' @return a matrix or a dataframe `size` by `size`.
 #' @export
 #' @examples
@@ -603,11 +604,20 @@ simplifiedNamesByStartEnd <- function(vecOfNames){
 #' cornerMat(myHugeMatrix, 3, "bottomleft")
 #' mySmallMatrix <- matrix(1:9, nrow = 3)
 #' cornerMat(mySmallMatrix)
-cornerMat <- function(matrix, size = 5, corner = "topleft"){
-  switch(corner,
-         "topleft" = head(matrix, size)[, head(1:ncol(matrix), size)],
-         "bottomleft" = tail(matrix, size)[, head(1:ncol(matrix), size)],
-         "topright" = head(matrix, size)[, tail(1:ncol(matrix), size)],
-         "bottomright" = tail(matrix, size)[, tail(1:ncol(matrix), size)],
-         stop("the corner value is not valid."))
+cornerMat <- function(matrix, size = 5, corner = "topleft", method = "minmax"){
+  switch(method,
+         "minmax" =  switch(corner,
+                            "topleft" = matrix[1:min(nrow(matrix), size), 1:min(ncol(matrix), size)],
+                            "bottomleft" = matrix[nrow(matrix) - min(nrow(matrix) - 1, size - 1):0, 1:min(ncol(matrix), size)],
+                            "topright" = matrix[1:min(nrow(matrix), size), ncol(matrix) - min(ncol(matrix) - 1, size - 1):0],
+                            "bottomright" = matrix[nrow(matrix) - min(nrow(matrix) - 1, size - 1):0, ncol(matrix) - min(ncol(matrix) - 1, size - 1):0],
+                            stop("the corner value is not valid.")),
+         "headtail" = switch(corner,
+                             "topleft" = head(matrix, size)[, head(1:ncol(matrix), size)],
+                             "bottomleft" = tail(matrix, size)[, head(1:ncol(matrix), size)],
+                             "topright" = head(matrix, size)[, tail(1:ncol(matrix), size)],
+                             "bottomright" = tail(matrix, size)[, tail(1:ncol(matrix), size)],
+                             stop("the corner value is not valid.")),
+         stop("Invalid method. Please choose one of 'minmax', 'headtail'")
+  )
 }
