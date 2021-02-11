@@ -4,7 +4,7 @@
 \alias{cornerMat}
 \title{Show the corner of a matrix}
 \usage{
-cornerMat(matrix, size = 5, corner = "topleft")
+cornerMat(matrix, size = 5, corner = "topleft", method = "minmax")
 }
 \arguments{
 \item{matrix}{a matrix or a dataframe}
@@ -12,6 +12,8 @@ cornerMat(matrix, size = 5, corner = "topleft")
 \item{size}{the size to display (default is 5)}
 
 \item{corner}{the corner to display ("topleft", "topright", "bottomleft", or "bottomright"), default is "topleft"}
+
+\item{method}{the method to select the top or bottom, default is 'minmax', can also be 'headtail'.}
 }
 \value{
 a matrix or a dataframe `size` by `size`.

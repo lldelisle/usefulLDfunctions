@@ -201,8 +201,9 @@ test_that("cornerMat gives expected results", {
   expected <- matrix(rep(c(98, 99, 100), 3) +
                        rep(c(0, 100, 200), each = 3),
                      ncol = 3)
-  rownames(expected) <- c(" [98,]", " [99,]", "[100,]")
   expect_equal(cornerMat(myHugeMatrix, 3, "bottomleft"), expected)
+  rownames(expected) <- c(" [98,]", " [99,]", "[100,]")
+  expect_equal(cornerMat(myHugeMatrix, 3, "bottomleft", method = "headtail"), expected)
   mySmallMatrix <- matrix(1:9, nrow = 3)
   expect_equal(cornerMat(mySmallMatrix), mySmallMatrix)
 })

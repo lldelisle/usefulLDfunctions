@@ -1,6 +1,18 @@
 ChangeLog
 =========
 
+v0.1.5 (2021-02-11)
+-------------------
+
+Bug Fix:
+
+* Fixed a bug in rVersionAbove
+
+Improvements:
+
+* New method for cornerMat
+
+
 v0.1.4 (2020-06-08)
 -------------------
 
