@@ -58,7 +58,7 @@ safelyLoadAPackageInCRANorBioconductor <-
         # If it is not it should be in bioconductor
         if (rversionAbove(3, 5)){
           # With new versions, you need to use BiocManager
-          safelyLoadAPackageInCRANorBioconductor("BiocManager")
+          safelyLoadAPackageInCRANorBioconductor("BiocManager", cranRep=cranRep)
           # This function is from BiocManager package
           install(myPackage, update = F, ask = F)
         } else {

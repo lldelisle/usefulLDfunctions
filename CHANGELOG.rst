@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+v0.1.6 (2021-11-25)
+-------------------
+
+Bug Fix:
+
+* Use cranRep for BiocManager in safelyLoadAPackageInCRANorBioconductor
+
 v0.1.5 (2021-02-11)
 -------------------
 
